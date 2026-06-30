@@ -46,7 +46,7 @@ body { background: var(--bg); }
 .pc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .pc-stat-label { font-size: 10px; color: var(--slate); }
 .pc-stat-val { font-size: 13px; font-weight: 700; color: var(--ink); }
-.cta-primary { background: var(--indigo); color: var(--white); border: none; border-radius: 27px; padding: 16px; font-size: 15px; font-weight: 700; cursor: pointer; display: block; font-family: inherit; }
+.cta-primary { width: 100%; background: var(--indigo); color: var(--white); border: none; border-radius: 27px; padding: 16px; font-size: 15px; font-weight: 700; cursor: pointer; display: block; font-family: inherit; }
 
 /* Desktop hero */
 .hero-desktop { background: linear-gradient(160deg, var(--hero-bg), #F8F7FD); padding: 56px 64px 36px; display: flex; align-items: center; gap: 56px; }
