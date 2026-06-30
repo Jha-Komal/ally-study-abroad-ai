@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import UnlockModal from "@/components/UnlockModal";
 import { MatchResult } from "@/lib/types";
 
 type ResultsProps = {
@@ -21,6 +23,8 @@ function ringDashoffset(percent: number, radius: number): number {
 export default function Results({ matches }: ResultsProps) {
   const [top, second, ...rest] = matches;
   const locked = rest.slice(0, 10);
+  const [unlocked, setUnlocked] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="scr">
@@ -89,8 +93,12 @@ export default function Results({ matches }: ResultsProps) {
       </div>
       <div className="locked-section">
         <div className="locked-header">
-          <div className="locked-title">{locked.length} more results, locked</div>
-          <div className="locked-count">Share your details to unlock</div>
+          <div className="locked-title">
+            {unlocked ? `${locked.length} more results, unlocked ✓` : `${locked.length} more results, locked`}
+          </div>
+          <div className="locked-count">
+            {unlocked ? "Thanks for sharing your details" : "Share your details to unlock"}
+          </div>
         </div>
         <div className="locked-grid-desktop">
           {locked.map((m) => (
@@ -108,17 +116,21 @@ export default function Results({ matches }: ResultsProps) {
                 </svg>
                 <div className="full-pct">{m.matchPercent}%</div>
               </div>
-              <div className="full-info">
+              <div className={`full-info${unlocked ? " unlocked" : ""}`}>
                 <div className="full-name">{m.university}</div>
                 <div className="full-meta">
                   {m.country} · {m.course} · {formatINR(m.tuitionPerYearINR)}/yr
                 </div>
               </div>
-              <div className="row-lock-icon">🔒</div>
+              {!unlocked && <div className="row-lock-icon">🔒</div>}
             </div>
           ))}
         </div>
-        <button className="unlock-btn">Unlock all {locked.length} with your details</button>
+        {!unlocked && (
+          <button className="unlock-btn" onClick={() => setShowModal(true)}>
+            Unlock all {locked.length} with your details
+          </button>
+        )}
       </div>
       <div className="results-cta-area">
         <div className="bottom-expert-bar">
@@ -126,6 +138,15 @@ export default function Results({ matches }: ResultsProps) {
           <button>Talk to expert</button>
         </div>
       </div>
+      {showModal && (
+        <UnlockModal
+          onClose={() => setShowModal(false)}
+          onUnlock={() => {
+            setUnlocked(true);
+            setShowModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }
