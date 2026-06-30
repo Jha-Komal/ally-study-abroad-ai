@@ -85,7 +85,14 @@ export default function Results({ matches }: ResultsProps) {
                 <div className="uni-reason">
                   <strong>Why Ally picked this:</strong> {m.reason}
                 </div>
-                <div className="uni-expert-link">💬 Know more, talk to an expert</div>
+                <a
+                  className="uni-expert-link"
+                  href="https://leapscholar.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  💬 Know more, talk to an expert
+                </a>
               </div>
             </div>
           ) : null
