@@ -1,66 +1,119 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+
+import { useState } from "react";
+import Landing from "@/components/screens/Landing";
+import Welcome from "@/components/screens/Welcome";
+import Question from "@/components/screens/Question";
+import CountriesQuestion from "@/components/screens/CountriesQuestion";
+import BudgetQuestion from "@/components/screens/BudgetQuestion";
+import PriorityQuestion from "@/components/screens/PriorityQuestion";
+import Loading from "@/components/screens/Loading";
+import Results from "@/components/screens/Results";
+import { QUESTIONS } from "@/lib/questions";
+import { Answers, INITIAL_ANSWERS, MatchResult, Step } from "@/lib/types";
 
 export default function Home() {
-  return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+  const [step, setStep] = useState<Step>("landing");
+  const [answers, setAnswers] = useState<Answers>(INITIAL_ANSWERS);
+  const [matches, setMatches] = useState<MatchResult[]>([]);
+
+  switch (step) {
+    case "landing":
+      return <Landing onStart={() => setStep("welcome")} />;
+    case "welcome":
+      return <Welcome onStart={() => setStep("q1")} />;
+    case "q1":
+      return (
+        <Question
+          config={QUESTIONS[0]}
+          selected={answers.qualification}
+          onSelect={(value) => {
+            setAnswers({ ...answers, qualification: value });
+            setStep("q2");
+          }}
+          onBack={() => setStep("welcome")}
         />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+      );
+    case "q2":
+      return (
+        <Question
+          config={QUESTIONS[1]}
+          selected={answers.ielts}
+          onSelect={(value) => {
+            setAnswers({ ...answers, ielts: value });
+            setStep("q3");
+          }}
+          onBack={() => setStep("q1")}
+        />
+      );
+    case "q3":
+      return (
+        <Question
+          config={QUESTIONS[2]}
+          selected={answers.field}
+          onSelect={(value) => {
+            setAnswers({ ...answers, field: value });
+            setStep("q4");
+          }}
+          onBack={() => setStep("q2")}
+        />
+      );
+    case "q4":
+      return (
+        <CountriesQuestion
+          selected={answers.countries}
+          onContinue={(countries) => {
+            setAnswers({ ...answers, countries });
+            setStep("q5");
+          }}
+          onBack={() => setStep("q3")}
+        />
+      );
+    case "q5":
+      return (
+        <BudgetQuestion
+          value={answers.budget}
+          onConfirm={(budget) => {
+            setAnswers({ ...answers, budget });
+            setStep("q6");
+          }}
+          onBack={() => setStep("q4")}
+        />
+      );
+    case "q6":
+      return (
+        <PriorityQuestion
+          value={answers.priorities}
+          onConfirm={(priorities) => {
+            setAnswers({ ...answers, priorities });
+            setStep("q7");
+          }}
+          onBack={() => setStep("q5")}
+        />
+      );
+    case "q7":
+      return (
+        <Question
+          config={QUESTIONS[3]}
+          selected={answers.timeline}
+          onSelect={(value) => {
+            setAnswers({ ...answers, timeline: value });
+            setStep("loading");
+          }}
+          onBack={() => setStep("q6")}
+        />
+      );
+    case "loading":
+      return (
+        <Loading
+          answers={answers}
+          onComplete={(result) => {
+            setMatches(result);
+            setStep("results");
+          }}
+        />
+      );
+    case "results":
+      return <Results matches={matches} />;
+  }
 }
